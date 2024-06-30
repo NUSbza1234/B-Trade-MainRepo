@@ -101,6 +101,7 @@ body {
 	border-radius: 25px;
 	margin-top: 15px;
 	transition: 0.3s ease;
+	margin-right: 15px;
 }
 
 .about-content .read-more:hover {
