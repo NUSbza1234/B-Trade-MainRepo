@@ -1,12 +1,16 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './Home.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { Link } from "react-router-dom"
 //import Tradingviewwid from "./Tradingviewwidget/Tradingviewwid"
 import Todo from './To Do/Todo'
-
+import FSAchatbot from './FSAChatbot/FSAchatbot'
 
 const Homet = () => {
+  const [showChatbot, setShowChatbot] = useState(false);
+  const toggleChatbot = () => {
+    setShowChatbot(!showChatbot);
+  };  
   return (
     <div>
 
@@ -43,6 +47,13 @@ const Homet = () => {
                   <Link to="/livenews" className='btn btn-info'>Live News Feed</Link>
                 </li>
 
+                <li className='nav-item'>
+                  <button onClick={toggleChatbot} className='btn btn-info'>
+                    {showChatbot ? 'Close Chatbot' : 'Open Chatbot'}
+                    {showChatbot && <FSAchatbot/>}
+                  </button>
+                </li>
+
               </ul>
 
             </div>
@@ -62,13 +73,18 @@ const Homet = () => {
         </div>
 
         <div className="main">
+
           <h3>Main content</h3>
+
         </div>
 
       </div>
 
+      <div>
 
+        {/*<FSAchatbot/>*/}
 
+      </div>
 
     </div>
   )

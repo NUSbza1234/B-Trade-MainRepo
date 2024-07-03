@@ -1,6 +1,8 @@
 import React from 'react'
 import './Aboutus.css'
 import image from '../../assets/image.jpg'
+//import 'bootstrap/dist/css/bootstrap.min.css'
+import { Link } from 'react-router-dom'
 
 const Aboutus = () => {
   return (
@@ -30,6 +32,7 @@ const Aboutus = () => {
                         </ul>
                         {/*<p>some text oernononqonoinceicnoeinoincowen</p>*/}
                         <a href="" class="read-more">Visit our GitHub</a>
+                        <Link to="/Homet" className='read-more'>Back to home</Link>
                     </div>
 
                 </section>
