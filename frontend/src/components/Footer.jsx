@@ -6,17 +6,17 @@ export default function Footer() {
             
             <div className="text-center">
                     <h5>
-                        Made by <a href="https://akshata-ganbote.netlify.app/" style={{textDecoration : "none", color: "red"}}>Team 6556</a>
+                        Made by <a href="#" style={{textDecoration : "none", color: "red"}}>Team 6556</a>
                     </h5>
             </div> 
 
             <div className="text-center pt-1">
                 
-                <a href="https://akshata-ganbote.netlify.app/" target="_blank" rel="noreferrer">
+                <a href="#" target="_blank" rel="noreferrer">
                     <i className="bi bi-globe mx-2" style={{fontSize : "20px"}}></i>
                 </a>
 
-                <a href="https://github.com/AkshataGanbote" target="_blank" rel="noreferrer">
+                <a href="#" target="_blank" rel="noreferrer">
                     <i className="bi bi-github mx-2" style={{fontSize : "21px"}}></i>
                 </a>
 
