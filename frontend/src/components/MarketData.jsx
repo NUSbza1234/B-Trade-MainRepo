@@ -12,7 +12,7 @@ function MarketData({ symbol }) {
     useEffect(() => {
         if (symbol) {
             console.log(`Fetching historical data for: ${symbol}`);
-            axios.get(`http://127.0.0.1:3001/historical/${symbol}`)
+            axios.get(`https://backend-iota-snowy.vercel.app/historical/${symbol}`)
                 .then(response => {
                     console.log('Fetched data:', response.data);
                     const barsData = response.data.bars[symbol] || [];
@@ -27,7 +27,7 @@ function MarketData({ symbol }) {
 
             checkMarketStatus();
 
-            axios.post('http://127.0.0.1:3001/subscribe', { symbol })
+            axios.post('https://backend-iota-snowy.vercel.app/subscribe', { symbol })
                 .then(response => {
                     console.log(response.data.message);
                 })
