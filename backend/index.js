@@ -13,7 +13,12 @@ const PortfolioModel = require('./models/Portfolio');
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: 'https://frontend-two-rho-60.vercel.app', // replace with your frontend URL
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+    optionsSuccessStatus: 204
+  }));
 
 const alpaca = new Alpaca({
     keyId: process.env.APCA_API_KEY_ID,
@@ -26,7 +31,7 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
   .catch(err => console.error('Could not connect to MongoDB Atlas', err));
 const server = require('http').createServer(app);
 const wss = new WebSocket.Server({ server });
-    
+
 let alpacaSocket;
 let currentSymbol = '';
 let isAuthenticated = false;
