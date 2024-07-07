@@ -17,7 +17,6 @@ const app = express();
 app.use(bodyParser.json());
 
 const allowedOrigins = [ 
-    process.env.FRONTEND_URL,  
     'https://frontend-two-rho-60.vercel.app/' 
 ];  
 const corsOptions = {  
@@ -35,6 +34,7 @@ const corsOptions = {
 }; 
    
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 
 const alpaca = new Alpaca({
@@ -120,8 +120,6 @@ function subscribeToSymbol(symbol) {
         setTimeout(() => subscribeToSymbol(symbol), 10000);
     }
 };
-
-app.options('*', cors(corsOptions)); 
 
 app.post('/subscribe', (req, res) => {
     const { symbol } = req.body;
