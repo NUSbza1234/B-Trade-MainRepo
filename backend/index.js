@@ -6,46 +6,44 @@ const Alpaca = require('@alpacahq/alpaca-trade-api');
 const WebSocket = require('ws');
 const bodyParser = require('body-parser');
 
+require('dotenv').config();
 
-require('dotenv').config()
-
-const FormDataModel = require ('./models/FormData');
+const FormDataModel = require('./models/FormData');
 const TradeModel = require('./models/Trade');
 const PortfolioModel = require('./models/Portfolio');
 
 const app = express();
 app.use(bodyParser.json());
 
-const allowedOrigins = [ 
-    'https://frontend-two-rho-60.vercel.app/' 
-];  
-const corsOptions = {  
-    origin: function (origin, callback) { 
-      if (!origin || allowedOrigins.indexOf(origin) !== -1) { 
-        callback(null, true); 
-      } else { 
-        callback(new Error('Not allowed by CORS')); 
-      } 
-    },  
-    methods: 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS', 
-    allowedHeaders: 'Content-Type, Authorization',
+const allowedOrigins = [
+    'https://frontend-two-rho-60.vercel.app'
+];
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type,Authorization',
     preflightContinue: false,
     optionsSuccessStatus: 204
-}; 
-   
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+};
 
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Preflight request handler
 
 const alpaca = new Alpaca({
     keyId: process.env.APCA_API_KEY_ID,
     secretKey: process.env.APCA_API_SECRET_KEY,
-
 });
 
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Connected to MongoDB Atlas'))
-  .catch(err => console.error('Could not connect to MongoDB Atlas', err));
+    .then(() => console.log('Connected to MongoDB Atlas'))
+    .catch(err => console.error('Could not connect to MongoDB Atlas', err));
 
 const server = require('http').createServer(app);
 const wss = new WebSocket.Server({ server });
@@ -71,7 +69,7 @@ function connectAlpacaWebSocket() {
         const data = JSON.parse(event.data);
         console.log('Received data from Alpaca:', data);
         if (data && data[0] && data[0].T === 'success' && data[0].msg === 'authenticated') {
-            isAuthenticated = true; 
+            isAuthenticated = true;
             console.log('Alpaca WebSocket authenticated and ready to subscribe.');
         }
         if (data && data.bars) {
@@ -93,7 +91,7 @@ function connectAlpacaWebSocket() {
     alpacaSocket.onclose = () => {
         console.log('WebSocket connection closed. Reconnecting...');
         isAuthenticated = false;
-        setTimeout(connectAlpacaWebSocket, 1000); 
+        setTimeout(connectAlpacaWebSocket, 1000);
     };
 }
 
@@ -119,7 +117,7 @@ function subscribeToSymbol(symbol) {
         console.log('WebSocket is not ready. Retry subscribing in 1 second.');
         setTimeout(() => subscribeToSymbol(symbol), 10000);
     }
-};
+}
 
 app.post('/subscribe', (req, res) => {
     const { symbol } = req.body;
@@ -230,47 +228,39 @@ app.get('/historical/:symbol', async (req, res) => {
     }
 });
 
-app.post('/register', (req, res)=>{
-    // To post / insert data into database
-
-    const {email, password} = req.body;
-    FormDataModel.findOne({email: email})
-    .then(user => {
-        if(user){
-            res.json("Already registered")
+app.post('/register', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const user = await FormDataModel.findOne({ email: email });
+        if (user) {
+            return res.json("Already registered");
         }
-        else{
-            FormDataModel.create(req.body)
-            .then(log_reg_form => res.json(log_reg_form))
-            .catch(err => res.json(err))
-        }
-    })
-     
-})
+        const newUser = new FormDataModel(req.body);
+        await newUser.save();
+        res.json(newUser);
+    } catch (err) {
+        res.status(500).json(err.message);
+    }
+});
 
-app.post('/login', (req, res)=>{
-    // To find record from the database
-    const {email, password} = req.body;
-    FormDataModel.findOne({email: email})
-    .then(user => {
-        if(user){
-            // If user found then these 2 cases
-            if(user.password === password) {
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const user = await FormDataModel.findOne({ email: email });
+        if (user) {
+            if (user.password === password) {
                 res.json("Success");
-            }
-            else{
+            } else {
                 res.json("Wrong password");
             }
+        } else {
+            res.json("No records found!");
         }
-        // If user not found then 
-        else{
-            res.json("No records found! ");
-        }
-    })
-})
+    } catch (err) {
+        res.status(500).json(err.message);
+    }
+});
 
 app.listen(3001, () => {
     console.log("Server listening on http://127.0.0.1:3001");
-
 });
-
