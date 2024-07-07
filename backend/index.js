@@ -13,12 +13,29 @@ const PortfolioModel = require('./models/Portfolio');
 
 const app = express();
 app.use(express.json());
-app.use(cors({
-    origin: 'https://frontend-two-rho-60.vercel.app', // replace with your frontend URL
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-    optionsSuccessStatus: 204
-  }));
+
+const allowedOrigins = [ 
+    'https://frontend-two-rho-60.vercel.app/',  
+    'https://backend-iota-snowy.vercel.app/',  
+    'https://frontend-two-rho-60.vercel.app/' 
+  ];  
+  const corsOptions = {  
+    origin: function (origin, callback) { 
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) { 
+        callback(null, true); 
+      } else { 
+        callback(new Error('Not allowed by CORS')); 
+      } 
+    },  
+    methods: 'GET, POST, PUT, DELETE, OPTIONS', 
+    allowedHeaders: 'Content-Type, Authorization' 
+  }; 
+   
+  app.use(bodyParser.json()); 
+  app.use(cors(corsOptions));
+
+
+
 
 const alpaca = new Alpaca({
     keyId: process.env.APCA_API_KEY_ID,
