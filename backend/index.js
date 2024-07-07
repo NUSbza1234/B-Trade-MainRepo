@@ -15,8 +15,7 @@ const app = express();
 app.use(express.json());
 
 const allowedOrigins = [ 
-    'https://frontend-two-rho-60.vercel.app/',  
-    'https://backend-iota-snowy.vercel.app/',  
+    process.env.FRONTEND_URL,  
     'https://frontend-two-rho-60.vercel.app/' 
   ];  
   const corsOptions = {  
@@ -33,8 +32,6 @@ const allowedOrigins = [
    
   app.use(bodyParser.json()); 
   app.use(cors(corsOptions));
-
-
 
 
 const alpaca = new Alpaca({
