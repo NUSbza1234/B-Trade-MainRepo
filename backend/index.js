@@ -4,6 +4,8 @@ const axios = require('axios');
 const mongoose = require('mongoose');
 const Alpaca = require('@alpacahq/alpaca-trade-api');
 const WebSocket = require('ws');
+const bodyParser = require('body-parser');
+
 
 require('dotenv').config()
 
@@ -12,13 +14,13 @@ const TradeModel = require('./models/Trade');
 const PortfolioModel = require('./models/Portfolio');
 
 const app = express();
-app.use(express.json());
+app.use(bodyParser.json());
 
 const allowedOrigins = [ 
     process.env.FRONTEND_URL,  
     'https://frontend-two-rho-60.vercel.app/' 
-  ];  
-  const corsOptions = {  
+];  
+const corsOptions = {  
     origin: function (origin, callback) { 
       if (!origin || allowedOrigins.indexOf(origin) !== -1) { 
         callback(null, true); 
@@ -26,12 +28,13 @@ const allowedOrigins = [
         callback(new Error('Not allowed by CORS')); 
       } 
     },  
-    methods: 'GET, POST, PUT, DELETE, OPTIONS', 
-    allowedHeaders: 'Content-Type, Authorization' 
-  }; 
+    methods: 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS', 
+    allowedHeaders: 'Content-Type, Authorization',
+    preflightContinue: false,
+    optionsSuccessStatus: 204
+}; 
    
-  app.use(bodyParser.json()); 
-  app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
 
 const alpaca = new Alpaca({
@@ -43,6 +46,7 @@ const alpaca = new Alpaca({
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB Atlas'))
   .catch(err => console.error('Could not connect to MongoDB Atlas', err));
+
 const server = require('http').createServer(app);
 const wss = new WebSocket.Server({ server });
 
@@ -116,6 +120,8 @@ function subscribeToSymbol(symbol) {
         setTimeout(() => subscribeToSymbol(symbol), 10000);
     }
 };
+
+app.options('*', cors(corsOptions)); 
 
 app.post('/subscribe', (req, res) => {
     const { symbol } = req.body;
