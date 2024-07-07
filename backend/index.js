@@ -34,7 +34,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Preflight request handler
+app.options('*', cors(corsOptions));
 
 const alpaca = new Alpaca({
     keyId: process.env.APCA_API_KEY_ID,
@@ -121,6 +121,7 @@ function subscribeToSymbol(symbol) {
 
 app.post('/subscribe', (req, res) => {
     const { symbol } = req.body;
+    console.log(`Subscribe request received for symbol: ${symbol}`);
     subscribeToSymbol(symbol);
     res.json({ message: `Subscribed to ${symbol}` });
 });
@@ -139,6 +140,7 @@ wss.on('connection', (ws) => {
 
 app.post('/trade', async (req, res) => {
     const { userId, symbol, quantity, price, type } = req.body;
+    console.log(`Trade request received: userId=${userId}, symbol=${symbol}, quantity=${quantity}, price=${price}, type=${type}`);
     try {
         const trade = new TradeModel({ userId, symbol, quantity, price, type });
         await trade.save();
@@ -164,12 +166,14 @@ app.post('/trade', async (req, res) => {
         await portfolio.save();
         res.status(201).json(trade);
     } catch (err) {
+        console.error('Error processing trade request:', err);
         res.status(500).json(err.message);
     }
 });
 
 app.get('/portfolio/:userId', async (req, res) => {
     const { userId } = req.params;
+    console.log(`Portfolio request received for userId: ${userId}`);
     try {
         const portfolio = await PortfolioModel.findOne({ userId });
         if (portfolio) {
@@ -178,11 +182,13 @@ app.get('/portfolio/:userId', async (req, res) => {
             res.status(404).json("Portfolio not found");
         }
     } catch (err) {
+        console.error('Error fetching portfolio:', err);
         res.status(500).json(err.message);
     }
 });
 
 app.get('/market-status', async (req, res) => {
+    console.log('Market status request received');
     try {
         const response = await alpaca.getClock();
         res.json(response);
@@ -194,6 +200,7 @@ app.get('/market-status', async (req, res) => {
 
 app.get('/historical/:symbol', async (req, res) => {
     const { symbol } = req.params;
+    console.log(`Historical data request received for symbol: ${symbol}`);
     const endDate = new Date().toISOString();
     const startDate = new Date();
     startDate.setFullYear(startDate.getFullYear() - 3);
@@ -224,39 +231,49 @@ app.get('/historical/:symbol', async (req, res) => {
         const response = await axios.request(options);
         res.json(response.data);
     } catch (error) {
+        console.error('Error fetching historical data:', error.message);
         res.status(500).json({ error: error.message });
     }
 });
 
 app.post('/register', async (req, res) => {
     const { email, password } = req.body;
+    console.log(`Register request received for email: ${email}`);
     try {
         const user = await FormDataModel.findOne({ email: email });
         if (user) {
+            console.log(`User already registered: ${email}`);
             return res.json("Already registered");
         }
         const newUser = new FormDataModel(req.body);
         await newUser.save();
+        console.log(`User registered successfully: ${email}`);
         res.json(newUser);
     } catch (err) {
+        console.error('Error during registration:', err.message);
         res.status(500).json(err.message);
     }
 });
 
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
+    console.log(`Login request received for email: ${email}`);
     try {
         const user = await FormDataModel.findOne({ email: email });
         if (user) {
             if (user.password === password) {
+                console.log(`Login successful for email: ${email}`);
                 res.json("Success");
             } else {
+                console.log(`Wrong password for email: ${email}`);
                 res.json("Wrong password");
             }
         } else {
+            console.log(`No records found for email: ${email}`);
             res.json("No records found!");
         }
     } catch (err) {
+        console.error('Error during login:', err.message);
         res.status(500).json(err.message);
     }
 });
