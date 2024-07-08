@@ -12,7 +12,7 @@ const Login = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
         
-        axios.post( 'https://backend-iota-snowy.vercel.app/login', {email, password})
+        axios.post( 'https://mernback-xmpb.onrender.com/login', {email, password})
         .then(result => {
             console.log(result);
             if(result.data === "Success"){

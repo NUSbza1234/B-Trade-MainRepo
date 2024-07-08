@@ -27,7 +27,7 @@ function MarketData({ symbol }) {
 
             checkMarketStatus();
 
-            axios.post('https://backend-iota-snowy.vercel.app/subscribe', { symbol })
+            axios.post('https://mernback-xmpb.onrender.com/subscribe', { symbol })
                 .then(response => {
                     console.log(response.data.message);
                 })
