@@ -12,7 +12,7 @@ function MarketData({ symbol }) {
     useEffect(() => {
         if (symbol) {
             console.log(`Fetching historical data for: ${symbol}`);
-            axios.get(`https://backend-iota-snowy.vercel.app/historical/${symbol}`)
+            axios.get(`https://betatradebackend.onrender.com/historical/${symbol}`)
                 .then(response => {
                     console.log('Fetched data:', response.data);
                     const barsData = response.data.bars[symbol] || [];
@@ -43,7 +43,7 @@ function MarketData({ symbol }) {
 
     const checkMarketStatus = async () => {
         try {
-            const response = await axios.get('http://127.0.0.1:3001/market-status');
+            const response = await axios.get('https://betatradebackend.onrender.com/market-status');
             const { is_open } = response.data;
             setMarketOpen(is_open);
         } catch (error) {
@@ -88,7 +88,7 @@ function MarketData({ symbol }) {
             return;
         }
 
-        const socket = new WebSocket('ws://127.0.0.1:3001');
+        const socket = new WebSocket('https://betatradebackend.onrender.com');
         socketRef.current = socket;
 
         socket.onopen = () => {
