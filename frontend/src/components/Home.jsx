@@ -27,7 +27,6 @@ const Home = () => {
             </form>
             <MarketData symbol={searchSymbol} /> {/* Pass the searched symbol */}
         </div>
-        <Link to='/portfolio' className="btn btn-light my-5">Portfolio</Link>
         <Link to='/login' className="btn btn-light my-5">Logout</Link>
     </div>
   )
