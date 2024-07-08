@@ -240,11 +240,13 @@ app.post('/register', async (req, res) => {
     const { email, password } = req.body;
     console.log(`Register request received for email: ${email}`);
     try {
+        console.log('Searching for existing user...');
         const user = await FormDataModel.findOne({ email: email });
         if (user) {
             console.log(`User already registered: ${email}`);
             return res.json("Already registered");
         }
+        console.log('Creating new user...');
         const newUser = new FormDataModel(req.body);
         await newUser.save();
         console.log(`User registered successfully: ${email}`);
