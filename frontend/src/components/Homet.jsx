@@ -48,10 +48,15 @@ const Homet = () => {
                 </li>
 
                 <li className='nav-item'>
-                  <button onClick={toggleChatbot} className='btn btn-info'>
+                  {/*<button onClick={toggleChatbot} className='btn btn-info'>
                     {showChatbot ? 'Close Chatbot' : 'Open Chatbot'}
                     {showChatbot && <FSAchatbot/>}
-                  </button>
+                  </button>*/}
+                  <a className='btn btn-info' href='https://fsa-chatbot-py.onrender.com' target="_blank" rel="noopener noreferrer">Open Chatbot</a>
+                </li>
+
+                <li className='nav-item'>
+                  <a className='btn btn-info' href='https://candlestickslpy.onrender.com' target="_blank" rel="noopener noreferrer">Open Technical Analysis</a>
                 </li>
 
               </ul>
@@ -74,7 +79,7 @@ const Homet = () => {
 
         <div className="main">
 
-          <h3>Main content</h3>
+          <h3>Chart viewer</h3>
           <iframe
             src='https://candlestickslpy.onrender.com'
             title='Candlestick Chart'
