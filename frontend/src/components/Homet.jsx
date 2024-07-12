@@ -75,6 +75,11 @@ const Homet = () => {
         <div className="main">
 
           <h3>Main content</h3>
+          <iframe
+            src='https://candlestickslpy.onrender.com'
+            title='Candlestick Chart'
+            className='candlestick'
+          ></iframe>
 
         </div>
 
