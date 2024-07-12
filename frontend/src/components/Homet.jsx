@@ -56,7 +56,7 @@ const Homet = () => {
                 </li>
 
                 <li className='nav-item'>
-                  <a className='btn btn-info' href='https://candlestickslpy.onrender.com' target="_blank" rel="noopener noreferrer">Open Technical Analysis</a>
+                  <a className='btn btn-info' href='https://sa-python.onrender.com' target="_blank" rel="noopener noreferrer">Open Technical Analysis</a>
                 </li>
 
               </ul>
