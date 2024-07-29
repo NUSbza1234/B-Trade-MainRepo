@@ -14,7 +14,7 @@ const Login = () => {
         event.preventDefault();
         
         try {
-            const response = await axios.post('https://betatradebackend.onrender.comlogin', { email, password });
+            const response = await axios.post('https://betatradebackend.onrender.com/login', { email, password });
             console.log(response);
             if (response.status === 200 && response.data.status === "Success") {
                 console.log("Login Success");
