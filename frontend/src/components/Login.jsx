@@ -1,33 +1,32 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState } from 'react';
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from 'axios';
-import { useUser } from './UserContext'; // Import useUser
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState();
+    const [password, setPassword] = useState();
     const navigate = useNavigate();
-    const { login } = useUser(); // Get login function from the user context
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = (event) => {
         event.preventDefault();
         
-        try {
-            const response = await axios.post('https://betatradebackend.onrender.com/login', { email, password });
-            console.log(response);
-            if (response.status === 200 && response.data.status === "Success") {
+        axios.post( 'https://betatradebackend.onrender.com/login', {email, password})
+        .then(result => {
+            console.log(result);
+            if(result.data === "Success"){
                 console.log("Login Success");
-                alert('Login successful!');
-                login(response.data.user); // Assuming the user object is returned in response.data.user
+                alert('Login successful!')
                 navigate('/home');
-            } else {
-                alert(response.data.status); // Display the error message from the server
             }
-        } catch (err) {
-            console.log(err);
-        }
+            else{
+                alert('Incorrect password! Please try again.');
+            }
+        })
+        .catch(err => console.log(err));
     }
+
 
     return (
         <div>
@@ -63,6 +62,7 @@ const Login = () => {
                         </div>
                         <button type="submit" className="btn btn-primary">Login</button>
                     </form>
+                    {/* TO add ' appostopee */}
                     <p className='container my-2'>Don&apos;t have an account?</p>
                     <Link to='/register' className="btn btn-secondary">Register</Link>
                 </div>
@@ -71,4 +71,4 @@ const Login = () => {
     )
 }
 
-export default Login;
+export default Login
