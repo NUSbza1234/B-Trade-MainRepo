@@ -75,6 +75,7 @@ function connectAlpacaWebSocket() {
         if (data && data.bars) {
             console.log(`Data received for symbol ${currentSymbol}:`, data.bars);
             data.bars.forEach(bar => {
+                console.log('Sending bar to clients:', bar);
                 wss.clients.forEach(client => {
                     if (client.readyState === WebSocket.OPEN) {
                         client.send(JSON.stringify(bar));
@@ -187,14 +188,45 @@ app.get('/portfolio/:userId', async (req, res) => {
     }
 });
 
+app.get('/transactions/:userId', async (req, res) => {
+    const { userId } = req.params;
+    console.log(`Transaction history request received for userId: ${userId}`);
+    try {
+        const transactions = await TradeModel.find({ userId });
+        res.json(transactions);
+    } catch (err) {
+        console.error('Error fetching transaction history:', err);
+        res.status(500).json(err.message);
+    }
+});
+
 app.get('/market-status', async (req, res) => {
     console.log('Market status request received');
+    const options = {
+        method: 'GET',
+        url: 'https://paper-api.alpaca.markets/v2/clock',
+        headers: {
+            'APCA-API-KEY-ID': process.env.APCA_API_KEY_ID,
+            'APCA-API-SECRET-KEY': process.env.APCA_API_SECRET_KEY,
+            'Content-Type': 'application/json'
+        }
+    };
+
     try {
-        const response = await alpaca.getClock();
-        res.json(response);
+        const response = await axios.request(options);
+        console.log('Market Clock:', response.data);
+        const is_open = response.data.is_open;
+        res.json({ is_open });
     } catch (error) {
         console.error('Error fetching market status:', error.message);
-        res.status(500).json({ error: error.message });
+        console.error('Error details:', error);
+        if (error.response) {
+            res.status(error.response.status).json({ error: error.response.data });
+        } else if (error.request) {
+            res.status(500).json({ error: 'No response received from Alpaca API' });
+        } else {
+            res.status(500).json({ error: error.message });
+        }
     }
 });
 

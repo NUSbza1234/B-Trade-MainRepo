@@ -6,7 +6,7 @@ const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   const login = (userData) => {
-    setUser(userData);
+    setUser(userData); // Ensure userData contains the necessary user information
   };
 
   const logout = () => {

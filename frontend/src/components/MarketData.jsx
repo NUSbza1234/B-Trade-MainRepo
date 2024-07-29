@@ -10,6 +10,8 @@ function MarketData({ symbol }) {
     const chartInstanceRef = useRef(null);
 
     useEffect(() => {
+        checkMarketStatus();
+
         if (symbol) {
             console.log(`Fetching historical data for: ${symbol}`);
             axios.get(`https://betatradebackend.onrender.com/historical/${symbol}`)
@@ -24,8 +26,6 @@ function MarketData({ symbol }) {
                     }
                 })
                 .catch(error => console.error('Error fetching historical data:', error));
-
-            checkMarketStatus();
 
             axios.post('https://betatradebackend.onrender.com/subscribe', { symbol })
                 .then(response => {
@@ -45,6 +45,7 @@ function MarketData({ symbol }) {
         try {
             const response = await axios.get('https://betatradebackend.onrender.com/market-status');
             const { is_open } = response.data;
+            console.log(`Market status: ${is_open ? "Open" : "Closed"}`);
             setMarketOpen(is_open);
         } catch (error) {
             console.error('Error checking market status:', error);
@@ -66,10 +67,10 @@ function MarketData({ symbol }) {
         chartInstanceRef.current = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: data.map(bar => new Date(bar.t).toLocaleDateString()),
+                labels: chartData.map(bar => new Date(bar.t).toLocaleDateString()),
                 datasets: [{
                     label: 'Stock Price',
-                    data: data.map(bar => bar.c),
+                    data: chartData.map(bar => bar.c),
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 1,
                     fill: false,
@@ -83,10 +84,10 @@ function MarketData({ symbol }) {
     };
 
     useEffect(() => {
-        if (!marketOpen) {
+        /*if (!marketOpen) {
             console.log('Market is closed, skipping WebSocket connection');
             return;
-        }
+        }*/
 
         const socket = new WebSocket('https://betatradebackend.onrender.com');
         socketRef.current = socket;
@@ -96,16 +97,18 @@ function MarketData({ symbol }) {
         };
 
         socket.onmessage = (event) => {
+            console.log('WebSocket message received:', event.data); 
             const newBar = JSON.parse(event.data);
             console.log('New bar from WebSocket:', newBar);
-            setCurrentPrice(newBar.c); 
-            console.log(`Updated current price for ${symbol}: ${newBar.c}`);
-            setData(prevData => {
-                const updatedData = [...prevData, newBar];
-                renderChart(updatedData);
-                return updatedData;
-            });
-
+            if (newBar.S === symbol) {  // Ensure the message is for the current symbol
+                setCurrentPrice(newBar.c); 
+                console.log(`Updated current price for ${symbol}: ${newBar.c}`);
+                setData(prevData => {
+                    const updatedData = [...prevData, newBar];
+                    renderChart(updatedData);
+                    return updatedData;
+                });
+            }
         };
 
         socket.onerror = (error) => {
@@ -116,10 +119,16 @@ function MarketData({ symbol }) {
             console.log('WebSocket connection closed');
         };
 
-        return () => socket.close();
-    }, [data, marketOpen]);
+        // Check WebSocket status every 5 seconds
+        const interval = setInterval(() => {
+            console.log('WebSocket connection status:', socket.readyState);
+        }, 5000);
 
-
+        return () => {
+            socket.close();
+            clearInterval(interval);
+        };
+    }, [marketOpen, symbol]);
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
@@ -128,7 +137,6 @@ function MarketData({ symbol }) {
                     <canvas id="myChart" style={{ width: '100%', height: '100%' }}></canvas>
                 </div>
                 <div style={{ marginLeft: '20px' }}>
-                    
                     <h4>{currentPrice ? `${currentPrice} USD` : 'Loading...'}</h4>
                 </div>
             </div>

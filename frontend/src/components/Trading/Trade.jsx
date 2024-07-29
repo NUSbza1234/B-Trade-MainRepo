@@ -13,7 +13,7 @@ const Trade = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:3001/trade', { ...formData, userId: user.id });
+            const response = await axios.post('https://betatradebackend.onrender.com/trade', { ...formData, userId: user.id });
             alert(`Trade successful: ${response.data._id}`);
         } catch (error) {
             alert(`Trade failed: ${error.response.data}`);
