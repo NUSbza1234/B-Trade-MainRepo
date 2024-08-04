@@ -47,7 +47,8 @@ const Trade = ({ symbol, currentPrice }) => {
             const response = await axios.post('https://betatradebackend.onrender.com/trade', { 
                 ...formData, 
                 userId: user._id,
-                price: currentPrice
+                price: currentPrice,
+                quantity: Number(formData.quantity),
             });
             alert(`Trade successful: ${response.data._id}`);
         } catch (error) {
