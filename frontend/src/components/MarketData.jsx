@@ -132,15 +132,16 @@ function MarketData({ symbol }) {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+            {!marketOpen && <p style={{ marginBottom: '20px' }}>The market is currently closed.</p>}
+            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start', width: '100%' }}>
                 <div style={{ width: '800px', height: '400px', position: 'relative' }}>
                     <canvas id="myChart" style={{ width: '100%', height: '100%' }}></canvas>
                 </div>
-                <div style={{ marginLeft: '20px' }}>
+                <div style={{ marginLeft: '20px', width: '300px' }}>
                     <h4>{currentPrice ? `${currentPrice} USD` : 'Loading...'}</h4>
+                    <Trade symbol={symbol} currentPrice={currentPrice} />
                 </div>
             </div>
-            {!marketOpen && <p>The market is currently closed.</p>}
         </div>
     );
 }
