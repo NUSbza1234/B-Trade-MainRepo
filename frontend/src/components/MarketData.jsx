@@ -15,7 +15,7 @@ function MarketData({ symbol }) {
 
         if (symbol) {
             console.log(`Fetching historical data for: ${symbol}`);
-            axios.get(`http://localhost:3001/historical/${symbol}`)
+            axios.get(`https://betatradebackend.onrender.com/historical/${symbol}`)
                 .then(response => {
                     console.log('Fetched data:', response.data);
                     const barsData = response.data.bars[symbol] || [];
@@ -28,7 +28,7 @@ function MarketData({ symbol }) {
                 })
                 .catch(error => console.error('Error fetching historical data:', error));
 
-            axios.post('http://localhost:3001/subscribe', { symbol })
+            axios.post('https://betatradebackend.onrender.com/subscribe', { symbol })
                 .then(response => {
                     console.log(response.data.message);
                 })
@@ -44,7 +44,7 @@ function MarketData({ symbol }) {
 
     const checkMarketStatus = async () => {
         try {
-            const response = await axios.get('http://localhost:3001/market-status');
+            const response = await axios.get('https://betatradebackend.onrender.com/market-status');
             const { is_open } = response.data;
             console.log(`Market status: ${is_open ? "Open" : "Closed"}`);
             setMarketOpen(is_open);
@@ -90,7 +90,7 @@ function MarketData({ symbol }) {
             return;
         }*/
 
-        const socket = new WebSocket('ws://localhost:3001');
+        const socket = new WebSocket('https://betatradebackend.onrender.com');
         socketRef.current = socket;
 
         socket.onopen = () => {
