@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useUser } from '../UserContext';
 
 const Trade = ({ symbol, currentPrice }) => {
+    console.log("Trade component is rendered");  // Debug log
+
     const { user } = useUser();
     const [formData, setFormData] = useState({
         symbol: symbol,
@@ -11,18 +13,41 @@ const Trade = ({ symbol, currentPrice }) => {
         action: 'Buy',
     });
 
+    useEffect(() => {
+        if (user) {
+            console.log("User found in context:", user);
+        } else {
+            console.log("User not found, waiting for context update...");
+        }
+    }, [user]);
+
+    useEffect(() => {
+        setFormData(prevData => ({ ...prevData, symbol }));
+    }, [symbol]);
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!user || !user._id) {
+            alert("User ID is missing. Please log in.");
+            return;
+        }
+
+        console.log('Submitting trade with data:', { 
+            ...formData, 
+            userId: user._id,  // Use user._id instead of user.id
+            price: currentPrice 
+        });
+
         try {
-            const price = currentPrice;
             const response = await axios.post('https://betatradebackend.onrender.com/trade', { 
                 ...formData, 
-                userId: user.id,
-                price
+                userId: user._id,
+                price: currentPrice
             });
             alert(`Trade successful: ${response.data._id}`);
         } catch (error) {
