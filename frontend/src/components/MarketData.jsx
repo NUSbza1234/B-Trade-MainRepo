@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Chart from 'chart.js/auto';
 import axios from 'axios';
+import Trade from './Trading/Trade';
+
 
 function MarketData({ symbol }) {
     const [data, setData] = useState([]);
